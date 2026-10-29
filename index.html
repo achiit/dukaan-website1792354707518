@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AETHER DYNAMICS — Next-Gen Spatial Intelligence</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  
+  <!-- Three.js r128 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'monospace'],
+          },
+          colors: {
+            void: '#030712',
+            surface: '#0b1120',
+            surfaceLight: '#131d36',
+            accentCyan: '#00f5d4',
+            accentViolet: '#7b2cbf',
+            accentPink: '#f72585',
+            neonGreen: '#39ff14',
+            subtleText: '#94a3b8'
+          },
+          animation: {
+            'spin-slow': 'spin 22s linear infinite',
+            'float-slow': 'float 6s ease-in-out infinite',
+            'pulse-glow': 'pulseGlow 4s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-12px)' },
+            },
+            pulseGlow: {
+              '0%': { opacity: '0.4', transform: 'scale(0.98)' },
+              '100%': { opacity: '0.8', transform: 'scale(1.05)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar & Resets */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #030712; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f5d4; }
+
+    :focus-visible {
+      outline: 2px solid #00f5d4;
+      outline-offset: 4px;
+    }
+
+    /* 3D Perspective Contexts */
+    .perspective-1000 { perspective: 1000px; }
+    .perspective-1200 { perspective: 1200px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+
+    /* Custom Glassmorphism */
+    .glass-panel {
+      background: rgba(11, 17, 32, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .glass-panel-glow:hover {
+      border-color: rgba(0, 245, 212, 0.35);
+      box-shadow: 0 0 30px rgba(0, 245, 212, 0.15);
+    }
+
+    /* Radial Grid Background */
+    .cyber-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-void text-slate-100 font-sans selection:bg-accentCyan selection:text-void overflow-x-hidden antialiased">
+
+  <!-- ========================================================= -->
+  <!-- NAVIGATION BAR                                            -->
+  <!-- ========================================================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4 px-6 md:px-12 backdrop-blur-md bg-void/60 border-b border-white/5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group focus:outline-none" aria-label="Aether Dynamics Home">
+        <div class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-accentCyan via-accentViolet to-accentPink p-[1.5px] transition-transform duration-300 group-hover:rotate-12">
+          <div class="w-full h-full bg-void rounded-[10px] flex items-center justify-center">
+            <svg class="w-5 h-5 text-accentCyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-mono text-lg font-bold tracking-wider text-white">AETHER<span class="text-accentCyan font-light">.AI</span></span>
+          <span class="text-[9px] uppercase tracking-widest text-slate-400 font-mono -mt-1">Spatial Core v4.2</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#about" class="hover:text-accentCyan transition-colors py-1">Architecture</a>
+        <a href="#features" class="hover:text-accentCyan transition-colors py-1">Capabilities</a>
+        <a href="#showcase" class="hover:text-accentCyan transition-colors py-1">Hardware Matrix</a>
+        <a href="#process" class="hover:text-accentCyan transition-colors py-1">Protocols</a>
+      </nav>
+
+      <!-- Desktop Action & Magnetic Button -->
+      <div class="hidden md:flex items-center gap-4">
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-white/10 text-xs font-mono text-accentCyan">
+          <span class="w-2 h-2 rounded-full bg-accentCyan animate-ping"></span>
+          Mesh: Online [100.0%]
+        </div>
+        <a href="#cta" class="magnetic-btn relative px-6 py-2.5 rounded-full bg-gradient-to-r from-accentCyan to-accentViolet text-void font-bold text-xs uppercase tracking-wider overflow-hidden group shadow-[0_0_20px_rgba(0,245,212,0.3)] transition-transform">
+          <span class="relative z-10 transition-colors group-hover:text-white">Deploy Node</span>
+          <div class="absolute inset-0 bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+        </a>
+      </div>
+
+      <!-- Mobile Hamburger Button -->
+      <button id="mobile-toggle" aria-label="Toggle Navigation Menu" aria-expanded="false" class="md:hidden flex flex-col justify-center items-center w-11 h-11 rounded-lg bg-surface border border-white/10 focus:outline-none">
+        <span class="w-5 h-0.5 bg-accentCyan transition-all duration-300 mb-1" id="bar1"></span>
+        <span class="w-5 h-0.5 bg-slate-200 transition-all duration-300 mb-1" id="bar2"></span>
+        <span class="w-5 h-0.5 bg-accentCyan transition-all duration-300" id="bar3"></span>
+      </button>
+
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-[73px] bg-void/98 border-b border-white/10 p-6 backdrop-blur-2xl transition-all duration-300">
+      <nav class="flex flex-col gap-4 text-base font-mono">
+        <a href="#about" class="mobile-link text-slate-300 hover:text-accentCyan py-2 border-b border-white/5">01 // Architecture</a>
+        <a href="#features" class="mobile-link text-slate-300 hover:text-accentCyan py-2 border-b border-white/5">02 // Capabilities</a>
+        <a href="#showcase" class="mobile-link text-slate-300 hover:text-accentCyan py-2 border-b border-white/5">03 // Hardware Matrix</a>
+        <a href="#process" class="mobile-link text-slate-300 hover:text-accentCyan py-2 border-b border-white/5">04 // Protocols</a>
+        <div class="pt-4 flex flex-col gap-3">
+          <div class="text-xs font-mono text-accentCyan flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-accentCyan"></span>
+            Synchronized with 482k nodes
+          </div>
+          <a href="#cta" class="mobile-link text-center py-3 rounded-xl bg-gradient-to-r from-accentCyan to-accentViolet text-void font-bold text-sm tracking-wide">
+            Deploy Node Now
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+
+  <main>
+    <!-- ========================================================= -->
+    <!-- SECTION 1: HERO (PHOTO #1 + THREE.JS SCENE 1)             -->
+    <!-- ========================================================= -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 pb-16 px-6 md:px-12 cyber-grid">
+      
+      <!-- PHOTO #1: Realistic background photo with heavy dark contrast overlay -->
+      <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <img 
+          src="https://picsum.photos/1920/1080?random=11" 
+          alt="Deep space computational center" 
+          class="w-full h-full object-cover object-center filter saturate-50 contrast-125 scale-105 transform origin-center animate-pulse-glow"
+        >
+        <!-- Mandatory Dark Gradient Overlay for optimal text contrast -->
+        <div class="absolute inset-0 bg-gradient-to-b from-void/95 via-void/85 to-void"></div>
+        <div class="absolute inset-0 bg-radial-gradient from-transparent via-void/60 to-void"></div>
+      </div>
+
+      <!-- Glowing Hero Flair Orbs -->
+      <div class="absolute top-1/4 left-1/4 w-72 md:w-96 h-72 md:h-96 rounded-full bg-accentCyan/15 blur-[120px] pointer-events-none"></div>
+      <div class="absolute bottom-1/3 right-1/4 w-80 md:w-[28rem] h-80 md:h-[28rem] rounded-full bg-accentViolet/20 blur-[140px] pointer-events-none"></div>
+
+      <!-- Hero Three.js Canvas: 3D Holographic Spatial Knot -->
+      <div id="hero-3d-container" class="absolute inset-0 z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
+        <canvas id="hero-canvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- Hero Main Content Grid -->
+      <div class="relative z-20 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center pointer-events-none">
+        
+        <!-- Left: Typography & CTAs -->
+        <div class="lg:col-span-8 flex flex-col items-start pointer-events-auto">
+          
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surfaceLight/80 border border-accentCyan/30 mb-6 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+            <span class="font-mono text-xs text-accentCyan tracking-wider uppercase font-semibold">Autonomous Spatial AI Framework</span>
+          </div>
+
+          <!-- Hero Heading -->
+          <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.05] text-white">
+            COMPUTE <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan via-slate-100 to-accentPink">BEYOND</span> <br/>
+            DIMENSIONS.
+          </h1>
+
+          <!-- Body Description -->
+          <p class="mt-6 max-w-2xl text-base sm:text-lg md:text-xl text-slate-300 font-normal leading-relaxed">
+            Aether synthesizes real-time quantum spatial telemetry with neural mesh processors. Experience frictionless zero-latency cognition across planetary node clusters.
+          </p>
+
+          <!-- Magnetic CTAs & Micro-Interactions -->
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            <a href="#cta" class="magnetic-btn relative px-8 py-4 rounded-xl bg-accentCyan text-void font-bold text-sm tracking-wider uppercase shadow-[0_0_35px_rgba(0,245,212,0.4)] hover:shadow-[0_0_50px_rgba(0,245,212,0.7)] transition-all duration-300">
+              Initialize Matrix
+            </a>
+            <a href="#features" class="magnetic-btn relative px-8 py-4 rounded-xl bg-surface/90 border border-white/20 hover:border-accentCyan/60 text-white font-medium text-sm tracking-wide transition-all backdrop-blur-md hover:bg-surfaceLight/80">
+              Explore Neural Layers
+            </a>
+          </div>
+
+          <!-- Live Telemetry Micro-Widget -->
+          <div class="mt-10 grid grid-cols-3 gap-6 pt-6 border-t border-white/10 w-full max-w-lg">
+            <div>
+              <div class="font-mono text-2xl lg:text-3xl font-extrabold text-accentCyan">0.14<span class="text-xs text-slate-400">ms</span></div>
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-mono">Neural Latency</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl lg:text-3xl font-extrabold text-white">8.4<span class="text-xs text-accentPink font-bold">PFLOPS</span></div>
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-mono">Mesh Throughput</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl lg:text-3xl font-extrabold text-accentCyan">99.99<span class="text-xs text-slate-400">%</span></div>
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-mono">Fault Immunity</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Rotating Circular Stamp & Overlapping Floating Glass Cards -->
+        <div class="lg:col-span-4 relative flex flex-col items-center justify-center pointer-events-auto min-h-[320px]">
+          
+          <!-- Circular Rotating Text Stamp -->
+          <div class="absolute -top-6 -right-2 md:right-4 w-36 h-36 z-20 pointer-events-none select-none">
+            <svg class="w-full h-full animate-spin-slow" viewBox="0 0 100 100">
+              <path id="circlePath" fill="none" d="M 50, 50 m -37, 0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"/>
+              <text class="text-[8.5px] uppercase font-mono tracking-widest fill-accentCyan font-bold">
+                <textPath xlink:href="#circlePath">
+                  • HYPERSPATIAL COMPUTE • EST 2025 • MATRIX CORE •
+                </textPath>
+              </text>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-8 h-8 rounded-full bg-accentCyan/20 border border-accentCyan flex items-center justify-center">
+                <div class="w-2.5 h-2.5 rounded-full bg-accentCyan animate-ping"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Glass Floating Card 1: Quantum Sync -->
+          <div class="w-full max-w-xs glass-panel rounded-2xl p-5 mb-4 shadow-2xl transform hover:scale-105 transition-all duration-300 border-l-4 border-l-accentCyan animate-float-slow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-mono text-accentCyan uppercase font-semibold">Node #8942-X</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-accentCyan/10 text-accentCyan border border-accentCyan/20">ACTIVE</span>
+            </div>
+            <p class="text-xs text-slate-300 font-mono leading-relaxed">
+              Synthesizing 64-dimensional tensor spatial vectors across distributed Edge-Relays.
+            </p>
+            <div class="mt-3 w-full bg-void/80 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-accentCyan to-accentViolet h-full w-[88%] animate-pulse"></div>
+            </div>
+          </div>
+
+          <!-- Glass Floating Card 2: Consensus -->
+          <div class="w-full max-w-xs glass-panel rounded-2xl p-4 shadow-2xl ml-auto transform hover:scale-105 transition-all duration-300 border-r-4 border-r-accentPink" style="animation-delay: -2.5s;">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-surfaceLight flex items-center justify-center text-accentPink border border-accentPink/30">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white">Byzantine Fault Lock</div>
+                <div class="text-[10px] font-mono text-slate-400">Zero entropy leak detected</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Scroll Down Indicator -->
+      <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-auto">
+        <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">Scroll to Decouple</span>
+        <div class="w-5 h-9 rounded-full border-2 border-slate-500/40 flex items-start justify-center p-1">
+          <div class="w-1.5 h-2.5 rounded-full bg-accentCyan animate-bounce"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 2: ABOUT / MISSION (CSS 3D DEPTH LAYERS - NO PHOTO)-->
+    <!-- ========================================================= -->
+    <section id="about" class="relative py-28 px-6 md:px-12 bg-surface/50 border-y border-white/5 overflow-hidden">
+      
+      <!-- Subtle Decorative Lights -->
+      <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-accentViolet/10 blur-[130px] pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-accentCyan font-bold">// ARCHITECTURAL FOUNDATION</span>
+            <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-2">
+              BEYOND MONOLITHIC <br/>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan to-accentViolet">NEURAL TOPOLOGIES</span>
+            </h2>
+          </div>
+          <p class="max-w-md text-sm md:text-base text-slate-300 leading-relaxed">
+            Legacy cloud compute buckles under dynamic volumetric spatial streams. Aether partitions neural inference directly across planetary hardware grids using our bespoke quantum-resilient protocol.
+          </p>
+        </div>
+
+        <!-- 3D Perspective Parallax Depth Stage -->
+        <div class="perspective-1200 py-6">
+          <div class="relative w-full rounded-3xl glass-panel p-8 md:p-14 border border-white/10 shadow-2xl transform-style-3d hover:[transform:rotateX(3deg)_rotateY(-2deg)] transition-transform duration-500">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              <!-- 3D Layer 1: Foundation (Depth Z: 20px) -->
+              <div class="p-6 rounded-2xl bg-void/80 border border-white/5 transform [transform:translateZ(20px)] hover:[transform:translateZ(40px)] transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl bg-accentCyan/10 border border-accentCyan/30 flex items-center justify-center text-accentCyan mb-6">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2 font-mono">01 / Volumetric Sharding</h3>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                  Spatial point-clouds are sliced into lightcone tensors, allowing individual low-power nodes to infer vast environments concurrently.
+                </p>
+                <div class="text-xs font-mono text-accentCyan flex items-center gap-2">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-accentCyan"></span>
+                  Dynamic Tensor Resolution
+                </div>
+              </div>
+
+              <!-- 3D Layer 2: Core Routing (Depth Z: 40px) -->
+              <div class="p-6 rounded-2xl bg-void/90 border border-accentCyan/20 transform [transform:translateZ(40px)] hover:[transform:translateZ(60px)] transition-transform duration-300 relative">
+                <div class="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-accentCyan text-void text-[10px] font-mono font-bold tracking-wider uppercase">
+                  Proprietary
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-accentViolet/20 border border-accentViolet flex items-center justify-center text-accentPink mb-6">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2 font-mono">02 / Zero-Proof Gossip</h3>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                  Nodes reach mathematical verification across 1,400+ geo-locations without broadcasting raw sensory telemetry, guaranteeing absolute sovereignty.
+                </p>
+                <div class="text-xs font-mono text-accentPink flex items-center gap-2">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-accentPink"></span>
+                  zk-SNARK Encryption Matrix
+                </div>
+              </div>
+
+              <!-- 3D Layer 3: Synchrony (Depth Z: 20px) -->
+              <div class="p-6 rounded-2xl bg-void/80 border border-white/5 transform [transform:translateZ(20px)] hover:[transform:translateZ(40px)] transition-transform duration-300">
+                <div class="w-12 h-12 rounded-xl bg-accentPink/10 border border-accentPink/30 flex items-center justify-center text-accentPink mb-6">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2 font-mono">03 / Nanosecond Sync</h3>
+                <p class="text-sm text-slate-300 leading-relaxed mb-4">
+                  Deterministic optical time-stamping ensures spatial models converge synchronously regardless of fiber distance and terrestrial latency.
+                </p>
+                <div class="text-xs font-mono text-neonGreen flex items-center gap-2">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-neonGreen"></span>
+                  Atomic Clock Syncing
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 3: FEATURES / BENTO GRID (3D TILT CARDS - NO PHOTO)-->
+    <!-- ========================================================= -->
+    <section id="features" class="py-28 px-6 md:px-12 bg-void relative">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surfaceLight border border-white/10 text-xs font-mono text-accentCyan mb-4">
+            <span>●</span> SPATIAL CORE CAPABILITIES
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white">
+            ENGINEERED FOR <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan via-white to-accentViolet">HYPER-DIMENSIONAL REALITIES</span>
+          </h2>
+          <p class="mt-4 text-slate-300 text-sm md:text-base">
+            Hover over any cluster to trigger live three-dimensional vector calculations.
+          </p>
+        </div>
+
+        <!-- Bento Grid Container with CSS 3D Tilt Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-6 perspective-1000">
+
+          <!-- Bento Card 1: Large Span (lg:col-span-8) -->
+          <div class="tilt-card lg:col-span-8 p-8 md:p-10 rounded-3xl glass-panel glass-panel-glow transition-all duration-300 transform-style-3d cursor-pointer flex flex-col justify-between relative overflow-hidden group">
+            <div class="relative z-10">
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-xs font-mono text-accentCyan uppercase tracking-wider font-bold">Protocol Matrix</span>
+                <span class="font-mono text-xs text-slate-400">01 // TENSOR COMPUTE</span>
+              </div>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+                Sub-Millimeter Neural Splatting
+              </h3>
+              <p class="text-sm md:text-base text-slate-300 max-w-xl leading-relaxed">
+                Transforms noisy video feeds from autonomous robots, drones, and mixed-reality lenses into dense, millimeter-accurate 3D radiance fields in less than 3 milliseconds.
+              </p>
+            </div>
+
+            <!-- Interactive CSS 3D Vector Visualizer (No Photo) -->
+            <div class="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 relative z-10">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-surfaceLight border border-accentCyan/30 flex items-center justify-center font-mono text-accentCyan font-bold">
+                  98%
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white">Bandwidth Compression</div>
+                  <div class="text-[11px] text-slate-400 font-mono">Neural Huffman Quantization</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 font-mono text-xs text-accentCyan group-hover:translate-x-2 transition-transform">
+                Read Whitepaper <span class="text-lg">→</span>
+              </div>
+            </div>
+
+            <!-- Subtle background geometric graphic inside CSS card -->
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 rounded-full border border-accentCyan/10 pointer-events-none group-hover:border-accentCyan/30 transition-colors"></div>
+            <div class="absolute -right-20 -bottom-20 w-96 h-96 rounded-full border border-accentViolet/10 pointer-events-none"></div>
+          </div>
+
+          <!-- Bento Card 2: Tall Span (lg:col-span-4) -->
+          <div class="tilt-card lg:col-span-4 p-8 rounded-3xl glass-panel glass-panel-glow transition-all duration-300 transform-style-3d cursor-pointer flex flex-col justify-between relative overflow-hidden group">
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <span class="text-xs font-mono text-accentPink uppercase tracking-wider font-bold">Edge Telemetry</span>
+                <span class="font-mono text-xs text-slate-400">02 // LOW-POWER</span>
+              </div>
+              <h3 class="text-2xl font-extrabold text-white mb-3">
+                Micro-Watt Edge Inference
+              </h3>
+              <p class="text-sm text-slate-300 leading-relaxed">
+                Executes hyper-sparse tensor weights on embedded silicone consuming under 350mW of total thermal power.
+              </p>
+            </div>
+
+            <div class="my-6 p-4 rounded-xl bg-void/60 border border-white/5 font-mono text-xs text-slate-300">
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span>Core Temperature:</span>
+                <span class="text-accentCyan">38.4°C</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-white/5">
+                <span>Power Draw:</span>
+                <span class="text-neonGreen">312 mW</span>
+              </div>
+              <div class="flex justify-between py-1">
+                <span>Quantization:</span>
+                <span class="text-white">INT-4 Native</span>
+              </div>
+            </div>
+
+            <div class="text-xs font-mono text-accentPink group-hover:translate-x-2 transition-transform flex items-center gap-1">
+              Inspect Architecture →
+            </div>
+          </div>
+
+          <!-- Bento Card 3: Standard (lg:col-span-4) -->
+          <div class="tilt-card lg:col-span-4 p-8 rounded-3xl glass-panel glass-panel-glow transition-all duration-300 transform-style-3d cursor-pointer flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-xl bg-surfaceLight border border-white/10 flex items-center justify-center text-accentCyan mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">Zero-Trust Attestation</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">
+                Cryptographic hardware enclaves ensure no rogue drone or spoofed camera feed can poison the global spatial map.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs font-mono text-slate-400">
+              Post-Quantum Kyber-1024
+            </div>
+          </div>
+
+          <!-- Bento Card 4: Standard (lg:col-span-4) -->
+          <div class="tilt-card lg:col-span-4 p-8 rounded-3xl glass-panel glass-panel-glow transition-all duration-300 transform-style-3d cursor-pointer flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-xl bg-surfaceLight border border-white/10 flex items-center justify-center text-accentPink mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">Multi-Agent Swarm Sync</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">
+                Coordinate hundreds of autonomous ground vehicles and UAVs inside congested warehouses with zero centralized bottlenecks.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs font-mono text-slate-400">
+              Decentralized Mesh Routing
+            </div>
+          </div>
+
+          <!-- Bento Card 5: Standard (lg:col-span-4) -->
+          <div class="tilt-card lg:col-span-4 p-8 rounded-3xl glass-panel glass-panel-glow transition-all duration-300 transform-style-3d cursor-pointer flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-xl bg-surfaceLight border border-white/10 flex items-center justify-center text-neonGreen mb-6 group-hover:scale-110 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2">Infinite Scaling Horizon</h3>
+              <p class="text-sm text-slate-300 leading-relaxed">
+                Horizontal compute expansion handles billions of concurrent spatial queries per second with linear cost efficiency.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-white/10 text-xs font-mono text-slate-400">
+              Infinite Horizontal Mesh
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 4: SHOWCASE / HARDWARE (PHOTO #2 GALLERY)         -->
+    <!-- ========================================================= -->
+    <section id="showcase" class="py-28 px-6 md:px-12 bg-surfaceLight/30 relative overflow-hidden border-y border-white/5">
+      
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-accentCyan font-bold">// HARDWARE PHYSICAL REALITY</span>
+            <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-2">
+              THE AETHER QUANTUM <br/>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan to-accentPink">PROCESSING POD [Q-8]</span>
+            </h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded bg-surface border border-accentCyan/30 text-accentCyan font-mono text-xs">
+              UNIT STATUS: CRYOGENIC LOCKED
+            </span>
+          </div>
+        </div>
+
+        <!-- 3D Perspective Stage housing PHOTO #2 -->
+        <div class="perspective-1200 w-full">
+          <div class="relative rounded-3xl overflow-hidden glass-panel border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.8)] transform-style-3d hover:[transform:rotateX(2deg)] transition-transform duration-500">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch">
+              
+              <!-- PHOTO #2: Showcase Photo with rich dark gradient overlay -->
+              <div class="lg:col-span-7 relative min-h-[360px] lg:min-h-[520px] overflow-hidden group">
+                <img 
+                  src="https://picsum.photos/1920/1080?random=24" 
+                  alt="Quantum processing node hardware cluster" 
+                  class="w-full h-full object-cover object-center filter saturate-100 contrast-110 group-hover:scale-105 transition-transform duration-700"
+                >
+                <!-- Mandatory Dark Contrast Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-r from-void/90 via-void/50 to-transparent lg:block hidden"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-void via-void/60 to-transparent lg:hidden block"></div>
+
+                <!-- Live Holographic HUD overlay on top of photo -->
+                <div class="absolute top-6 left-6 flex flex-col gap-2 pointer-events-none">
+                  <div class="px-3 py-1 rounded bg-void/80 border border-white/20 text-[11px] font-mono text-accentCyan backdrop-blur-md">
+                    FOV: 360° LiDAR + 8K Stereo Rig
+                  </div>
+                  <div class="px-3 py-1 rounded bg-void/80 border border-white/20 text-[11px] font-mono text-white backdrop-blur-md">
+                    Thermal Flux: Nominal (12mK)
+                  </div>
+                </div>
+
+                <div class="absolute bottom-6 left-6 right-6 flex items-center justify-between pointer-events-none">
+                  <div class="text-[10px] font-mono text-slate-300 bg-void/80 px-2 py-1 rounded backdrop-blur-sm border border-white/10">
+                    DIAGNOSTIC HASH: 0x8F3B90...4A
+                  </div>
+                </div>
+              </div>
+
+              <!-- Specs & Interactive Telemetry Readout -->
+              <div class="lg:col-span-5 p-8 md:p-12 flex flex-col justify-between bg-surface/90">
+                <div>
+                  <div class="font-mono text-xs text-accentPink uppercase tracking-wider mb-2 font-bold">Physical Architecture</div>
+                  <h3 class="text-2xl font-bold text-white mb-4">Autonomous Mesh Node v4</h3>
+                  <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                    Housed in an IP68 aerospace-grade magnesium-titanium alloy shell. Designed to operate in hostile desert conditions, deep-sea submersibles, and polar sub-zero research stations.
+                  </p>
+
+                  <!-- Technical Metrics List -->
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/5">
+                      <span class="text-slate-400">Cryogenic Core:</span>
+                      <span class="text-accentCyan font-bold">Dilution Closed-Loop</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/5">
+                      <span class="text-slate-400">Spatial Sampling Rate:</span>
+                      <span class="text-white font-bold">120,000 pts/sec</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/5">
+                      <span class="text-slate-400">Mesh Uplink:</span>
+                      <span class="text-accentPink font-bold">Laser Optical Terabit</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-white/5">
+                      <span class="text-slate-400">Enclave Security:</span>
+                      <span class="text-neonGreen font-bold">FIPS 140-3 Level 4</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Testimonial/Team Avatar (Avatar usage compliant with rules) -->
+                <div class="mt-8 pt-6 border-t border-white/10 flex items-center gap-4">
+                  <img src="https://i.pravatar.cc/150?img=33" alt="Dr. Aris Thorne" class="w-12 h-12 rounded-full border-2 border-accentCyan object-cover">
+                  <div>
+                    <div class="text-sm font-bold text-white">Dr. Aris Thorne</div>
+                    <div class="text-xs text-slate-400 font-mono">Chief Quantum Architect, Ex-CERN</div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 5: PROTOCOLS / PROCESS (3D FLIP CARDS - NO PHOTO) -->
+    <!-- ========================================================= -->
+    <section id="process" class="py-28 px-6 md:px-12 bg-void relative">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="font-mono text-xs uppercase tracking-widest text-accentCyan font-bold">// 4-STAGE PIPELINE</span>
+          <h2 class="text-3xl sm:text-5xl font-black tracking-tight text-white mt-2">
+            HOW REALITY TURNS <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan to-accentViolet">INTO DETERMINISTIC CODE</span>
+          </h2>
+          <p class="mt-4 text-slate-300 text-sm md:text-base">
+            Hover or tap any protocol card to reveal low-level telemetry routines.
+          </p>
+        </div>
+
+        <!-- 4 Step Cards with 3D Flip Micro-Interactions -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 perspective-1000">
+
+          <!-- Card 1 -->
+          <div class="flip-card-wrapper h-80 group cursor-pointer">
+            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-700 group-hover:[transform:rotateY(180deg)] rounded-2xl">
+              <!-- Front Side -->
+              <div class="absolute inset-0 backface-hidden rounded-2xl glass-panel p-6 flex flex-col justify-between border-t-2 border-t-accentCyan">
+                <div>
+                  <span class="font-mono text-3xl font-black text-white/20">01</span>
+                  <h3 class="text-xl font-bold text-white mt-4 font-mono">Ingestion</h3>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Heterogeneous sensors feed LiDAR, depth-maps, and optical telemetry directly to edge buffers.
+                  </p>
+                </div>
+                <div class="text-xs font-mono text-accentCyan flex items-center justify-between">
+                  <span>Hover to Flip</span>
+                  <span>↺</span>
+                </div>
+              </div>
+              <!-- Back Side (180 deg) -->
+              <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-2xl bg-surfaceLight border border-accentCyan/40 p-6 flex flex-col justify-between">
+                <div>
+                  <div class="text-xs font-mono text-accentCyan font-bold uppercase mb-2">Ingestion Internals</div>
+                  <p class="text-xs text-slate-200 font-mono leading-relaxed">
+                    Zero-copy ring buffer with memory-mapped DMA handles 40Gb/s PCI-e streaming without context switching.
+                  </p>
+                </div>
+                <div class="px-2 py-1 rounded bg-void text-[10px] font-mono text-neonGreen">
+                  Latency: 0.04 ms
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="flip-card-wrapper h-80 group cursor-pointer">
+            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-700 group-hover:[transform:rotateY(180deg)] rounded-2xl">
+              <!-- Front Side -->
+              <div class="absolute inset-0 backface-hidden rounded-2xl glass-panel p-6 flex flex-col justify-between border-t-2 border-t-accentViolet">
+                <div>
+                  <span class="font-mono text-3xl font-black text-white/20">02</span>
+                  <h3 class="text-xl font-bold text-white mt-4 font-mono">Distillation</h3>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Point-clouds are encoded into sparse harmonic basis functions, pruning 99.4% of redundant noise.
+                  </p>
+                </div>
+                <div class="text-xs font-mono text-accentViolet flex items-center justify-between">
+                  <span>Hover to Flip</span>
+                  <span>↺</span>
+                </div>
+              </div>
+              <!-- Back Side (180 deg) -->
+              <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-2xl bg-surfaceLight border border-accentViolet/40 p-6 flex flex-col justify-between">
+                <div>
+                  <div class="text-xs font-mono text-accentPink font-bold uppercase mb-2">Distillation Internals</div>
+                  <p class="text-xs text-slate-200 font-mono leading-relaxed">
+                    GPU-accelerated octree creation runs over 100M voxels per second with FP8 tensor quantization.
+                  </p>
+                </div>
+                <div class="px-2 py-1 rounded bg-void text-[10px] font-mono text-accentPink">
+                  Compression: 160:1
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="flip-card-wrapper h-80 group cursor-pointer">
+            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-700 group-hover:[transform:rotateY(180deg)] rounded-2xl">
+              <!-- Front Side -->
+              <div class="absolute inset-0 backface-hidden rounded-2xl glass-panel p-6 flex flex-col justify-between border-t-2 border-t-accentPink">
+                <div>
+                  <span class="font-mono text-3xl font-black text-white/20">03</span>
+                  <h3 class="text-xl font-bold text-white mt-4 font-mono">Consensus</h3>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Neighboring nodes vote on occlusion boundaries using raft-based zero-knowledge proofs.
+                  </p>
+                </div>
+                <div class="text-xs font-mono text-accentPink flex items-center justify-between">
+                  <span>Hover to Flip</span>
+                  <span>↺</span>
+                </div>
+              </div>
+              <!-- Back Side (180 deg) -->
+              <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-2xl bg-surfaceLight border border-accentPink/40 p-6 flex flex-col justify-between">
+                <div>
+                  <div class="text-xs font-mono text-accentCyan font-bold uppercase mb-2">Consensus Internals</div>
+                  <p class="text-xs text-slate-200 font-mono leading-relaxed">
+                    Asynchronous Byzantine fault agreement achieved within 2 roundtrips via low-orbit satellite mesh.
+                  </p>
+                </div>
+                <div class="px-2 py-1 rounded bg-void text-[10px] font-mono text-accentCyan">
+                  Integrity: 100.00%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="flip-card-wrapper h-80 group cursor-pointer">
+            <div class="flip-card-inner relative w-full h-full transform-style-3d transition-transform duration-700 group-hover:[transform:rotateY(180deg)] rounded-2xl">
+              <!-- Front Side -->
+              <div class="absolute inset-0 backface-hidden rounded-2xl glass-panel p-6 flex flex-col justify-between border-t-2 border-t-neonGreen">
+                <div>
+                  <span class="font-mono text-3xl font-black text-white/20">04</span>
+                  <h3 class="text-xl font-bold text-white mt-4 font-mono">Projection</h3>
+                  <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Render-ready radiance fields stream immediately to any client runtime or robotic actuation loop.
+                  </p>
+                </div>
+                <div class="text-xs font-mono text-neonGreen flex items-center justify-between">
+                  <span>Hover to Flip</span>
+                  <span>↺</span>
+                </div>
+              </div>
+              <!-- Back Side (180 deg) -->
+              <div class="absolute inset-0 backface-hidden [transform:rotateY(180deg)] rounded-2xl bg-surfaceLight border border-neonGreen/40 p-6 flex flex-col justify-between">
+                <div>
+                  <div class="text-xs font-mono text-neonGreen font-bold uppercase mb-2">Projection Internals</div>
+                  <p class="text-xs text-slate-200 font-mono leading-relaxed">
+                    Direct WebGPU & Vulkan surface binding enables 144FPS holographic render at 4K per eye.
+                  </p>
+                </div>
+                <div class="px-2 py-1 rounded bg-void text-[10px] font-mono text-neonGreen">
+                  Refresh: 144 Hz
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 6: CTA & THREE.JS SCENE 2 (NO PHOTO)              -->
+    <!-- ========================================================= -->
+    <section id="cta" class="relative py-32 px-6 md:px-12 overflow-hidden bg-void border-t border-white/10 flex items-center justify-center min-h-[640px]">
+      
+      <!-- CTA Three.js Canvas: 3D Quantum Gyroscope / Morphing Core -->
+      <div id="cta-3d-container" class="absolute inset-0 z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
+        <canvas id="cta-canvas" class="w-full h-full block"></canvas>
+      </div>
+
+      <!-- Glowing CTA Orbs -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 md:w-[36rem] h-96 md:h-[36rem] rounded-full bg-accentViolet/20 blur-[150px] pointer-events-none"></div>
+
+      <!-- Content Container with glass backdrop -->
+      <div class="relative z-10 max-w-4xl mx-auto text-center pointer-events-none">
+        
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surfaceLight/80 border border-accentCyan/30 mb-8 pointer-events-auto backdrop-blur-md">
+          <span class="w-2 h-2 rounded-full bg-accentCyan animate-ping"></span>
+          <span class="font-mono text-xs text-accentCyan font-bold tracking-widest uppercase">Global Testnet Epoch 7 Live</span>
+        </div>
+
+        <h2 class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-tight">
+          SYNC YOUR SENSORS <br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentCyan via-slate-100 to-accentPink">WITH THE GLOBAL MATRIX</span>
+        </h2>
+
+        <p class="mt-6 max-w-2xl mx-auto text-base sm:text-lg text-slate-300 leading-relaxed">
+          Request node access to our high-frequency testnet cluster. Deploy custom AI pipelines or integrate spatial LiDAR streams in under five minutes.
+        </p>
+
+        <!-- Magnetic Button Interaction -->
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-4 pointer-events-auto">
+          <a href="#about" class="magnetic-btn relative px-9 py-4 rounded-xl bg-gradient-to-r from-accentCyan via-accentViolet to-accentPink text-void font-extrabold text-sm uppercase tracking-wider shadow-[0_0_40px_rgba(0,245,212,0.4)] hover:shadow-[0_0_60px_rgba(247,37,133,0.5)] transition-all">
+            <span class="relative z-10 text-white font-mono">Claim Node Credentials</span>
+          </a>
+          <button onclick="alert('SDK Documentation dispatched to session buffer.')" class="magnetic-btn px-8 py-4 rounded-xl glass-panel border border-white/20 hover:border-accentCyan/50 text-white font-mono text-xs uppercase tracking-wider transition-all">
+            Download C++ / Rust SDK
+          </button>
+        </div>
+
+        <!-- Social Proof Avatars (Avatar usage compliant with rules) -->
+        <div class="mt-12 flex items-center justify-center gap-3 pointer-events-auto">
+          <div class="flex -space-x-2">
+            <img class="w-8 h-8 rounded-full border border-void" src="https://i.pravatar.cc/150?img=11" alt="Developer avatar">
+            <img class="w-8 h-8 rounded-full border border-void" src="https://i.pravatar.cc/150?img=12" alt="Developer avatar">
+            <img class="w-8 h-8 rounded-full border border-void" src="https://i.pravatar.cc/150?img=15" alt="Developer avatar">
+            <img class="w-8 h-8 rounded-full border border-void" src="https://i.pravatar.cc/150?img=20" alt="Developer avatar">
+          </div>
+          <span class="text-xs font-mono text-slate-400">Trusted by 2,400+ Spatial Robotics Engineers</span>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <!-- ========================================================= -->
+  <!-- FOOTER                                                    -->
+  <!-- ========================================================= -->
+  <footer class="bg-void border-t border-white/10 pt-16 pb-12 px-6 md:px-12 text-slate-400 font-mono text-xs">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+      
+      <!-- Brand & Mission -->
+      <div class="md:col-span-1">
+        <a href="#" class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 rounded-lg bg-accentCyan flex items-center justify-center text-void font-bold text-xs">
+            ▲
+          </div>
+          <span class="text-base font-bold text-white tracking-wider">AETHER.AI</span>
+        </a>
+        <p class="text-slate-400 leading-relaxed text-xs">
+          Decentralized spatial telemetry & neural radiance streaming for autonomous machines.
+        </p>
+        <div class="mt-4 flex items-center gap-2 text-neonGreen">
+          <span class="w-2 h-2 rounded-full bg-neonGreen animate-pulse"></span>
+          Network Health: 99.998% Optimal
+        </div>
+      </div>
+
+      <!-- Quick Nav -->
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-wider mb-4">Architecture</h4>
+        <ul class="space-y-2">
+          <li><a href="#about" class="hover:text-accentCyan transition-colors">Volumetric Shards</a></li>
+          <li><a href="#features" class="hover:text-accentCyan transition-colors">Tensor Splatting</a></li>
+          <li><a href="#showcase" class="hover:text-accentCyan transition-colors">Hardware Matrix</a></li>
+          <li><a href="#process" class="hover:text-accentCyan transition-colors">Consensus Layer</a></li>
+        </ul>
+      </div>
+
+      <!-- Resources -->
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-wider mb-4">Developer</h4>
+        <ul class="space-y-2">
+          <li><a href="#hero" class="hover:text-accentCyan transition-colors">Rust Core Crate</a></li>
+          <li><a href="#hero" class="hover:text-accentCyan transition-colors">Python Tensor Wrapper</a></li>
+          <li><a href="#hero" class="hover:text-accentCyan transition-colors">WebGPU Radiance Visualizer</a></li>
+          <li><a href="#hero" class="hover:text-accentCyan transition-colors">Mainnet Explorer</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div>
+        <h4 class="text-white font-bold uppercase tracking-wider mb-4">Node Dispatch</h4>
+        <p class="text-slate-400 mb-3">Subscribe to protocol upgrades and hardware dispatch manifests.</p>
+        <form onsubmit="event.preventDefault(); alert('Subscribed to Aether dispatch.');" class="flex gap-2">
+          <input 
+            type="email" 
+            placeholder="engineer@domain.com" 
+            required 
+            class="bg-surface border border-white/10 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-accentCyan w-full text-xs"
+          >
+          <button type="submit" class="px-4 py-2 bg-accentCyan text-void font-bold rounded-lg hover:bg-white transition-colors">
+            Join
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Copyright -->
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+      <div>© 2025 AETHER DYNAMICS INC. ALL RIGHTS RESERVED.</div>
+      <div class="flex gap-6">
+        <a href="#" class="hover:text-slate-300">PRIVACY POLICY</a>
+        <a href="#" class="hover:text-slate-300">SECURITY ATTESTATION</a>
+        <a href="#" class="hover:text-slate-300">TERMS OF COMPUTE</a>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ========================================================= -->
+  <!-- JAVASCRIPT & THREE.JS LOGIC                               -->
+  <!-- ========================================================= -->
+  <script>
+    // -------------------------------------------------------------
+    // 1. MOBILE MENU TOGGLE
+    // -------------------------------------------------------------
+    const mobileBtn = document.getElementById('mobile-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    let menuOpen = false;
+
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        menuOpen = !menuOpen;
+        mobileBtn.setAttribute('aria-expanded', menuOpen);
+        if (menuOpen) {
+          mobileMenu.classList.remove('hidden');
+          bar1.classList.add('rotate-45', 'translate-y-1.5');
+          bar2.classList.add('opacity-0');
+          bar3.classList.add('-rotate-45', '-translate-y-1.5');
+        } else {
+          mobileMenu.classList.add('hidden');
+          bar1.classList.remove('rotate-45', 'translate-y-1.5');
+          bar2.classList.remove('opacity-0');
+          bar3.classList.remove('-rotate-45', '-translate-y-1.5');
+        }
+      });
+
+      document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+          menuOpen = false;
+          mobileBtn.setAttribute('aria-expanded', 'false');
+          mobileMenu.classList.add('hidden');
+          bar1.classList.remove('rotate-45', 'translate-y-1.5');
+          bar2.classList.remove('opacity-0');
+          bar3.classList.remove('-rotate-45', '-translate-y-1.5');
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 2. MAGNETIC BUTTON MICRO-INTERACTION (GSAP)
+    // -------------------------------------------------------------
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!prefersReducedMotion) {
+      const magneticButtons = document.querySelectorAll('.magnetic-btn');
+      magneticButtons.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          gsap.to(btn, {
+            x: x * 0.35,
+            y: y * 0.35,
+            duration: 0.28,
+            ease: 'power2.out'
+          });
+        });
+
+        btn.addEventListener('mouseleave', () => {
+          gsap.to(btn, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: 'elastic.out(1, 0.4)'
+          });
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 3. CSS 3D TILT CARDS LOGIC (BENTO GRID)
+    // -------------------------------------------------------------
+    if (!prefersReducedMotion) {
+      const tiltCards = document.querySelectorAll('.tilt-card');
+      tiltCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -7;
+          const rotateY = ((x - centerX) / centerX) * 7;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 4. THREE.JS SCENE 1: HERO HOLOGRAPHIC QUANTUM KNOT
+    // -------------------------------------------------------------
+    const heroContainer = document.getElementById('hero-3d-container');
+    const heroCanvas = document.getElementById('hero-canvas');
+
+    if (heroContainer && heroCanvas && typeof THREE !== 'undefined') {
+      const scene1 = new THREE.Scene();
+      const camera1 = new THREE.PerspectiveCamera(45, heroContainer.clientWidth / heroContainer.clientHeight, 0.1, 100);
+      camera1.position.z = 5.2;
+
+      const renderer1 = new THREE.WebGLRenderer({
+        canvas: heroCanvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+      });
+      renderer1.setSize(heroContainer.clientWidth, heroContainer.clientHeight);
+      renderer1.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lights
+      const ambientLight1 = new THREE.AmbientLight(0xffffff, 0.9);
+      scene1.add(ambientLight1);
+
+      const cyanPoint = new THREE.PointLight(0x00f5d4, 3, 20);
+      cyanPoint.position.set(4, 3, 4);
+      scene1.add(cyanPoint);
+
+      const violetPoint = new THREE.PointLight(0x7b2cbf, 4, 20);
+      violetPoint.position.set(-4, -3, -2);
+      scene1.add(violetPoint);
+
+      // Geometry 1: Intricate Torus Knot Wireframe
+      const knotGeo = new THREE.TorusKnotGeometry(1.4, 0.38, 120, 24, 2, 3);
+      const knotMat = new THREE.MeshStandardMaterial({
+        color: 0x00f5d4,
+        emissive: 0x00332c,
+        roughness: 0.2,
+        metalness: 0.9,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.75
+      });
+      const knotMesh = new THREE.Mesh(knotGeo, knotMat);
+      scene1.add(knotMesh);
+
+      // Particle Galaxy Cloud orbiting knot
+      const particleCount = 450;
+      const particleGeo = new THREE.BufferGeometry();
+      const particlePos = new Float32Array(particleCount * 3);
+
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        const r = Math.cbrt(Math.random()) * 2.8 + 0.8;
+        particlePos[i] = r * Math.sin(phi) * Math.cos(theta);
+        particlePos[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+        particlePos[i + 2] = r * Math.cos(phi);
+      }
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+
+      const particleMat = new THREE.PointsMaterial({
+        color: 0xf72585,
+        size: 0.035,
+        transparent: true,
+        opacity: 0.8
+      });
+      const particleCloud = new THREE.Points(particleGeo, particleMat);
+      scene1.add(particleCloud);
+
+      // Pointer Interactivity
+      let targetX = 0;
+      let targetY = 0;
+      heroContainer.addEventListener('mousemove', (e) => {
+        const rect = heroContainer.getBoundingClientRect();
+        targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 1.5;
+        targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 1.5;
+      });
+
+      // Pause rendering when off-screen
+      let isHeroVisible = true;
+      const observer1 = new IntersectionObserver(([entry]) => {
+        isHeroVisible = entry.isIntersecting;
+      }, { threshold: 0.1 });
+      observer1.observe(heroContainer);
+
+      // Render Loop
+      function animateHero() {
+        requestAnimationFrame(animateHero);
+        if (!isHeroVisible) return;
+
+        knotMesh.rotation.x += 0.004;
+        knotMesh.rotation.y += 0.007;
+        particleCloud.rotation.y -= 0.002;
+        particleCloud.rotation.x -= 0.001;
+
+        // Smooth cursor responsiveness
+        knotMesh.rotation.x += (targetY - knotMesh.rotation.x * 0.1) * 0.03;
+        knotMesh.rotation.y += (targetX - knotMesh.rotation.y * 0.1) * 0.03;
+
+        renderer1.render(scene1, camera1);
+      }
+      animateHero();
+
+      // Window Resize Handler
+      window.addEventListener('resize', () => {
+        if (!heroContainer) return;
+        const width = heroContainer.clientWidth;
+        const height = heroContainer.clientHeight;
+        camera1.aspect = width / height;
+        camera1.updateProjectionMatrix();
+        renderer1.setSize(width, height);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 5. THREE.JS SCENE 2: CTA DUAL-RING QUANTUM GYROSCOPE
+    // -------------------------------------------------------------
+    const ctaContainer = document.getElementById('cta-3d-container');
+    const ctaCanvas = document.getElementById('cta-canvas');
+
+    if (ctaContainer && ctaCanvas && typeof THREE !== 'undefined') {
+      const scene2 = new THREE.Scene();
+      const camera2 = new THREE.PerspectiveCamera(45, ctaContainer.clientWidth / ctaContainer.clientHeight, 0.1, 100);
+      camera2.position.z = 5.0;
+
+      const renderer2 = new THREE.WebGLRenderer({
+        canvas: ctaCanvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: "high-performance"
+      });
+      renderer2.setSize(ctaContainer.clientWidth, ctaContainer.clientHeight);
+      renderer2.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lights
+      const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.8);
+      scene2.add(ambientLight2);
+
+      const neonLight = new THREE.PointLight(0x00f5d4, 4, 15);
+      neonLight.position.set(0, 0, 3);
+      scene2.add(neonLight);
+
+      // Core Object: Icosahedron with Wireframe Gyroscope Rings
+      const coreGroup = new THREE.Group();
+      scene2.add(coreGroup);
+
+      // Ring 1
+      const ring1Geo = new THREE.TorusGeometry(2.0, 0.03, 16, 100);
+      const ring1Mat = new THREE.MeshStandardMaterial({
+        color: 0x00f5d4,
+        emissive: 0x004d40,
+        wireframe: false
+      });
+      const ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+      coreGroup.add(ring1);
+
+      // Ring 2
+      const ring2Geo = new THREE.TorusGeometry(1.6, 0.025, 16, 100);
+      const ring2Mat = new THREE.MeshStandardMaterial({
+        color: 0x7b2cbf,
+        emissive: 0x3a0ca3,
+        wireframe: false
+      });
+      const ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+      ring2.rotation.x = Math.PI / 3;
+      coreGroup.add(ring2);
+
+      // Inner Crystal: Icosahedron
+      const icoGeo = new THREE.IcosahedronGeometry(0.85, 1);
+      const icoMat = new THREE.MeshStandardMaterial({
+        color: 0xf72585,
+        emissive: 0x7209b7,
+        wireframe: true,
+        roughness: 0.1,
+        metalness: 0.9
+      });
+      const icoMesh = new THREE.Mesh(icoGeo, icoMat);
+      coreGroup.add(icoMesh);
+
+      // Pointer reactivity
+      let ctaTargetX = 0;
+      let ctaTargetY = 0;
+      ctaContainer.addEventListener('mousemove', (e) => {
+        const rect = ctaContainer.getBoundingClientRect();
+        ctaTargetX = ((e.clientX - rect.left) / rect.width - 0.5) * 1.8;
+        ctaTargetY = ((e.clientY - rect.top) / rect.height - 0.5) * 1.8;
+      });
+
+      // Pause loop when off-screen
+      let isCtaVisible = false;
+      const observer2 = new IntersectionObserver(([entry]) => {
+        isCtaVisible = entry.isIntersecting;
+      }, { threshold: 0.1 });
+      observer2.observe(ctaContainer);
+
+      function animateCTA() {
+        requestAnimationFrame(animateCTA);
+        if (!isCtaVisible) return;
+
+        ring1.rotation.z += 0.008;
+        ring1.rotation.y += 0.004;
+
+        ring2.rotation.x += 0.006;
+        ring2.rotation.y -= 0.007;
+
+        icoMesh.rotation.x -= 0.009;
+        icoMesh.rotation.z += 0.005;
+
+        coreGroup.rotation.y += (ctaTargetX - coreGroup.rotation.y * 0.1) * 0.04;
+        coreGroup.rotation.x += (ctaTargetY - coreGroup.rotation.x * 0.1) * 0.04;
+
+        renderer2.render(scene2, camera2);
+      }
+      animateCTA();
+
+      window.addEventListener('resize', () => {
+        if (!ctaContainer) return;
+        const width = ctaContainer.clientWidth;
+        const height = ctaContainer.clientHeight;
+        camera2.aspect = width / height;
+        camera2.updateProjectionMatrix();
+        renderer2.setSize(width, height);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 6. GSAP SCROLL ENHANCEMENTS (RESPECTING VISIBILITY SAFETY)
+    // -------------------------------------------------------------
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined' && !prefersReducedMotion) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Subtle parallax on the Hero knot based on page scroll
+      if (typeof knotMesh !== 'undefined') {
+        gsap.to(knotMesh.position, {
+          y: -1.2,
+          scrollTrigger: {
+            trigger: "#hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: 1.5
+          }
+        });
+      }
+
+      // Gentle Section Title reveals (Uses immediateRender: false to avoid hiding markup)
+      const sections = ['#about', '#features', '#showcase', '#process', '#cta'];
+      sections.forEach(secId => {
+        const heading = document.querySelector(`${secId} h2`);
+        if (heading) {
+          gsap.from(heading, {
+            y: 35,
+            duration: 0.9,
+            ease: 'power3.out',
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: heading,
+              start: "top 88%",
+              once: true
+            }
+          });
+        }
+      });
+    }
+  </script>
+
+<script data-forge-safety>
+
+(function () {
+  var seen = new WeakMap();
+  function hasContent(el) {
+    return (el.textContent || '').trim().length > 0 || !!el.querySelector('img,svg,canvas,video');
+  }
+  function check() {
+    if (document.hidden || !document.body) return;
+    var vh = window.innerHeight || 800, now = Date.now();
+    var els = document.body.querySelectorAll('*');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      var r = el.getBoundingClientRect();
+      if (r.bottom < -40 || r.top > vh + 40 || r.width < 12 || r.height < 12) continue;
+      var cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.pointerEvents === 'none' || cs.position === 'fixed') continue;
+      if (el.getAttribute('aria-hidden') === 'true' || el.tagName === 'CANVAS') continue;
+      if (parseFloat(cs.opacity) < 0.05 || cs.visibility === 'hidden') {
+        if (!hasContent(el)) continue;
+        var t = seen.get(el);
+        if (!t) { seen.set(el, now); continue; }
+        if (now - t > 1400) {
+          el.style.setProperty('transition', 'opacity .6s ease', 'important');
+          el.style.setProperty('opacity', '1', 'important');
+          el.style.setProperty('visibility', 'visible', 'important');
+        }
+      } else if (seen.has(el)) {
+        seen.delete(el);
+      }
+    }
+  }
+  setInterval(check, 900);
+})();
+
+</script>
+</body>
+</html>
